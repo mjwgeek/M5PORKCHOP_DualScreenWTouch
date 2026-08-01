@@ -1,0 +1,77 @@
+
+- The built-in Cardputer display continues to show the normal native 240×135 interface.
+- Action modes are enlarged to 320×180 on the external display.
+- The remaining 30-pixel bands above and below the enlarged content show animated effects.
+- Touching the external display while the normal idle screen is active opens the Porkchop menu.
+- The root menu and its group/action menus use large touch buttons on the external display.
+- The physical keyboard remains available for all normal controls.
+- Detailed screens and secondary commands remain primarily keyboard-controlled.
+
+
+## Hardware
+
+Tested display type:
+
+- 2.8-inch ILI9341
+- 320×240 pixels
+- SPI interface
+- XPT2046-compatible resistive touchscreen
+- 14-pin module header
+- Separate `VCC` and `LED` pins
+
+## Wiring
+
+### ILI9341 display
+
+| Display pin | Signal | Cardputer ADV |
+|---:|---|---|
+| 1 | VCC | `5VIN` |
+| 2 | GND | `GND` |
+| 3 | CS | `GPIO5` |
+| 4 | RESET / RST | `GPIO3` |
+| 5 | DC / RS | `GPIO6` |
+| 6 | SDI / MOSI | `GPIO14` |
+| 7 | SCK / CLK | `GPIO40` |
+| 8 | LED | `5VOUT` |
+| 9 | SDO / MISO | Not connected |
+
+### Resistive touchscreen
+
+| Display pin | Signal | Cardputer ADV |
+|---:|---|---|
+| 10 | T_CLK | `GPIO15` |
+| 11 | T_CS | `GPIO4` |
+| 12 | T_DIN | `GPIO13` |
+| 13 | T_DO | `GPIO8` |
+| 14 | T_IRQ | `GPIO9` |
+
+Do not connect the display `SDO/MISO` pin. The firmware configures the external display as write-only.
+
+Touch uses bit-banged software SPI so it does not share the display/SD hardware-SPI traffic.
+
+## Important GPIO notes
+
+The external display reuses pins that other Cardputer accessories or firmware may expect.
+
+- Keep **GPS disabled**. GPS would use `GPIO3`, `GPIO5`, and `GPIO6`, which are assigned to display reset, chip-select, and data/command.
+- Do not enable other hardware that uses the same EXT-header pins.
+- `GPIO8` and `GPIO9` are also associated with the Cardputer ADV keyboard interface. This Porkchop build is designed to operate with both the keyboard and touch connected, but unrelated firmware may not handle that shared wiring correctly.
+- The display and Cardputer SD card use the same SPI host. The display is configured with bus locking and `bus_shared=true`.
+
+## Display configuration
+
+The external panel is initialized with:
+
+```text
+Controller: ILI9341
+Resolution: 320×240 landscape
+Rotation:   7 in M5GFX
+SPI host:   SPI2 / FSPI
+SPI mode:   0
+Write rate: 27 MHz
+SCK:        GPIO40
+MOSI:       GPIO14
+MISO:       disabled
+DC:         GPIO6
+CS:         GPIO5
+RST:        GPIO3
