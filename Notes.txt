@@ -1,0 +1,8 @@
+M5PORKCHOP dual-screen v22
+
+Changes from v21:
+- Removed the top and bottom margin navigation buttons.
+- Restored the normal animated/decorative band effects around mirrored text screens.
+- Disabled generic margin-touch event generation so invisible buttons cannot trigger actions.
+- Kept the working full-screen external touch menu and touch-to-open-menu behavior.
+- Kept keyboard navigation and the comma/slash/apostrophe band-effect cycle.
